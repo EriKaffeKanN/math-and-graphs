@@ -1,0 +1,198 @@
+/* --- Variables --- */
+
+/* Color-scheme */
+$primary-color: #f8f8f8;
+$background-color: #0B0C10;
+$background-color-second: #1F2833;
+$text-color: #C5C6C7;
+$foreground-color: #66FCF1;
+$border-color: #45A29E;
+$shadow-color: rgba(0, 0, 0, 0.13);
+$darker-shadow-color: rgba(0, 0, 0, 0.2);
+
+/* Measurements */
+$defaultButtonWidth: 20vw;
+$headerHeight: 10vh;
+
+body {
+  background: linear-gradient(180deg, $background-color 17%, darken($background-color-second, 5%) 78%);
+  background-size: 100vw 100vh;
+}
+
+figure {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $foreground-color;
+  margin: 0;
+}
+
+p, span, div {
+  color: $text-color;
+}
+
+/* Common stylings */
+@mixin border {
+  border: solid 2px $border-color;
+  border-radius: 4px;
+  box-sizing: border-box;
+  box-shadow: 5px 5px 5px $shadow-color;
+}
+
+/* Global components */
+
+.navButton {
+  @include border;
+  font-size: 1.5em;
+
+  width: $defaultButtonWidth;
+  height: 10vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: 0.2s;
+}
+
+.navButton:hover {
+  box-shadow: 5px 5px 5px $darker-shadow-color;
+  background-color: rgba($border-color, 0.5);
+}
+
+.globalHeader {
+  width: 100vw;
+  height: $headerHeight;
+
+  background-color: $darker-shadow-color;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.globalHeader > * {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.globalHeader h3 {
+  width: 20vw;
+  height: 100%;
+}
+
+.globalHeader nav {
+  width: 70vw;
+  height: 100%;
+}
+
+.globalHeader svg {
+  width: 10vw;
+  height: 50%
+}
+
+.hamburger {
+  :hover {
+    cursor: pointer;
+  }
+
+  rect {
+    transition: 0.3s;
+  }
+
+  g {
+
+    :nth-child(1) {
+      transform-origin: 0% 0%;
+    }
+    :nth-child(2) {
+      transform-origin: 0% 50%;
+    }
+    :nth-child(3) {
+      transform-origin: 0% 100%;
+    }
+  }
+}
+
+.hamburgerClicked {
+  g {
+    :nth-child(1) {
+      transform: translateX(10px) rotate(45deg) translateX(-1.5px);
+    }
+    :nth-child(2) {
+      transform: translateX(50px);
+      color: rgba(0, 0, 0, 0);
+    }
+    :nth-child(3) {
+      transform: translateX(10px) rotate(-45deg) translateX(-1.5px);
+    }
+  }
+}
+
+.projectDisplay {
+  @include border;
+  background-color: $background-color-second;
+  width: $defaultButtonWidth;
+  height: 50vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  h3 {
+    border-bottom: solid 1px $border-color;
+  }
+
+  figure {
+    box-shadow: 5px 5px 5px $darker-shadow-color;
+    width: 90%;
+    height: 60%;
+    margin-bottom: 1em;
+  }
+
+  .navButton {
+    border: none;
+    border-top: solid 2px $border-color;
+  }
+}
+
+/* Wrappers */
+
+#startPageWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+
+  height: 90vh;
+
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h2 {
+      font-size: 1em;
+    }
+  }
+
+  .navButton {
+    margin-bottom: 6em;
+  }
+}
+
+#projectWrapper {
+  padding: 1em;
+
+  h2 {
+    height: 10vh;
+  }
+}

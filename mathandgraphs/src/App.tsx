@@ -10,6 +10,7 @@ import './style.scss';
 import StartPage from './components/pages/startpage'
 import ProjectMenu from './components/pages/projectmenu'
 import Header from './components/global/header'
+import ComplexTransformationGrapher from './components/projects/complexgrapher/complextransformationgrapher';
 
 
 function App() {
@@ -17,8 +18,10 @@ function App() {
     <div className="App">
       <Router>
         <Header />
-        <div id="pageContent">
         <Switch>
+          <Route path="/projects/complexgrapher">
+            <ComplexTransformationGrapher width={0.8*window.innerWidth} height={0.6*window.innerHeight} />
+          </Route>
           <Route path="/projects">
             <ProjectMenu />
           </Route>
@@ -26,7 +29,6 @@ function App() {
             <StartPage />
           </Route>
         </Switch>
-        </div>
       </Router>
     </div>
   );

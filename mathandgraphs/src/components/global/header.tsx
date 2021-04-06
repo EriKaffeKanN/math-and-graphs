@@ -6,10 +6,13 @@ function Header() {
         <header className="globalHeader">
             <h3>Erik Andersson</h3>
             <nav>
-                <span>Om</span>
-                <span>Kontakt</span>
             </nav>
-            <HamburgerSVG />
+            <HamburgerSVG navElements={
+                <div className="navMenu">
+                    <span className="navElement">Om</span>
+                    <span className="navElement">Kontakt</span>
+                </div>
+            } />
         </header>
     );
 }

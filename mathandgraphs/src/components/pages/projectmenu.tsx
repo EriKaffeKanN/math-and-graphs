@@ -6,7 +6,7 @@ function ProjectMenu() {
     return(
         <div id="projectWrapper">
             <h2>All projects:</h2>
-            <ProjectDisplay title="Complex graph viewer"/>
+            <ProjectDisplay title="Complex graph viewer" link="complexgrapher"/>
         </div>
     );
 }

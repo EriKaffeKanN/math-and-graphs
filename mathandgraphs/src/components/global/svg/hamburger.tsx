@@ -2,7 +2,7 @@ import '../../../style.scss'
 import React from 'react'
 
 interface IProps {
-
+    navElements?: JSX.Element;
 }
 
 interface IState {
@@ -18,21 +18,31 @@ class HamburgerSVG extends React.Component<IProps, IState> {
         };
     }
 
+    renderNavMenu() {
+        if(this.state.isClicked) {
+            return this.props.navElements;
+        }
+        return null;
+    }
+
     render() {
         const classlist = "hamburger " + (this.state.isClicked ? "hamburgerClicked" : "");
 
         return(
-            <svg className={classlist} onClick={() => {
-                this.setState(prevState => ({
-                    isClicked: !prevState.isClicked
-                }));
-            }} width={50} height={40} viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg">
-                <g color="currentColor">
-                    <rect width={50} height={10} fill="currentColor" />
-                    <rect y={15} width={50} height={10} fill="currentColor" />
-                    <rect y={30} width={50} height={10} fill="currentColor" />
-                </g>
-            </svg>
+            <>
+                <svg className={classlist} onClick={() => {
+                    this.setState(prevState => ({
+                        isClicked: !prevState.isClicked
+                    }));
+                }} width={50} height={40} viewBox="0 0 50 40" xmlns="http://www.w3.org/2000/svg">
+                    <g color="currentColor">
+                        <rect width={50} height={10} fill="currentColor" />
+                        <rect y={15} width={50} height={10} fill="currentColor" />
+                        <rect y={30} width={50} height={10} fill="currentColor" />
+                    </g>
+                </svg>
+                {this.renderNavMenu()}
+            </>
         );
     }
 }

@@ -13,9 +13,7 @@ type NavButtonProptypes = {
 
 function NavButton(props: NavButtonProptypes) {
     return(
-        <div className="navButton">
-            <Link to={'/'+props.link}>{props.text}</Link>
-        </div>
+        <Link className="navButton" to={'/'+props.link}>{props.text}</Link>
     );
 }
 

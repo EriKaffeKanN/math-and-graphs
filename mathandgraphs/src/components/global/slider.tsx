@@ -1,5 +1,8 @@
 import React, { createRef } from 'react'
 import '../../style.scss'
+import Vector2 from './interfaces/vector2';
+import EXMath from '../../util/math'
+import Rect from './interfaces/rect'
 
 import MouseTrackingComponent from './mousetrackingcomponent'
 
@@ -15,21 +18,15 @@ interface IState extends IProps {
 
 }
 
-interface Vector2 {
-    x: number;
-    y: number;
-}
-
 export default class Slider extends MouseTrackingComponent<IProps, IState> {
 
-    interval: number = 0;
-    mousePos: Vector2 = {x: 0, y: 0};
-    mouseDown: boolean = false;
+    tickSpeed = 10;
 
-    trackingElementRef = createRef<HTMLDivElement>();
+    borderRef = createRef<HTMLDivElement>();
     lineRef = createRef<HTMLDivElement>();
     ballRef = createRef<HTMLDivElement>();
 
+    // Needs to be in constructor instead of init in order to access props
     constructor(props: IProps) {
         super(props);
         this.state = {
@@ -41,59 +38,71 @@ export default class Slider extends MouseTrackingComponent<IProps, IState> {
         };
     }
 
-    updateValue() {
+    init() {
 
     }
 
-    updateAlignment() {
+    onLoad() {
+        this.startTracking(this.borderRef);
+    }
+
+    onUnload() {
+        this.stopTracking();
+    }
+
+    update() {
         this.align();
     }
 
-    componentDidMount() {
-        this.interval = window.setInterval(() => {
-            this.updateAlignment();
-        }, 10);
-
-        this.startTracking();
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.interval);
-        this.interval = 0;
-
-        this.stopTracking();
+    updateValue(lineRect: Rect, borderRect: Rect) {
+        if(this.mouseDown) {
+            const percentage = (this.mouse.x - (lineRect.x - borderRect.x)) / lineRect.width;
+            const value = percentage*(this.state.max - this.state.min) + this.state.min;
+            this.setState(prevState => ({
+                value: EXMath.clamp(value, this.state.min, this.state.max)
+            }));
+        }
     }
 
     align() {
         const line = this.lineRef.current!;
-        const lineRect = line.getBoundingClientRect();
-        const lineX = lineRect.left;
-        const lineY = lineRect.top;
-        const lineStyle = getComputedStyle(line);
+        const lineRect = this.getRect(line);
+
+        const border = this.borderRef.current!;
+        const borderRect = this.getRect(border);
+
+        this.updateValue(lineRect, borderRect);
+        
+        const button = this.ballRef.current!;
+        const buttonRect = this.getRect(button);
+
+        const percentage = (this.state.value - this.state.min) / (this.state.max - this.state.min);
+        const offset = lineRect.width * percentage;
+
+        button.setAttribute("style", `left: ${lineRect.x - buttonRect.width/2 + offset}px; top: ${lineRect.y - buttonRect.height/2 + lineRect.height/2}px`);
+    }
+
+    getRect(element: Element): Rect {
+        const rect = element.getBoundingClientRect();
+        const emtStyle = getComputedStyle(element);
 
         const removePx = (s: string) => {
             return(s.slice(0, s.length - 2));
         }
 
-        const lineHeight = Number(removePx(lineStyle.height));
-        const lineWidth = Number(removePx(lineStyle.width));
-        
-        const button = this.ballRef.current!;
-        const buttonStyle = getComputedStyle(button);
-        const buttonWidth = Number(removePx(buttonStyle.width));
-        const buttonHeight = Number(removePx(buttonStyle.height));
-
-        const percentage = (this.state.value - this.state.min) / (this.state.max - this.state.min);
-        const offset = lineWidth * percentage;
-
-        button.setAttribute("style", `left: ${lineX - buttonWidth/2 + offset}px; top: ${lineY - buttonHeight/2 + lineHeight/2}px`);
+        return{
+            x: rect.left,
+            y: rect.top,
+            width: Number(removePx(emtStyle.width)),
+            height: Number(removePx(emtStyle.height))
+        };
     }
 
     render() {
         return(
             <div className="slider">
                 <h4>{this.props.name}</h4>
-                <div ref={this.trackingElementRef} className="sliderBorder">
+                <div ref={this.borderRef} className="sliderBorder">
                     <div ref={this.lineRef} className="sliderLine">
                         <div ref={this.ballRef} className="sliderButton"></div>
                     </div>

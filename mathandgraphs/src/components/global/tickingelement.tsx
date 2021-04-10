@@ -8,8 +8,10 @@ abstract class TickingComponent<IProps, IState> extends React.Component<IProps, 
 
     abstract init(): void;
     abstract update(): void;
-    abstract onLoad(): void;
-    abstract on
+    // Override
+    protected onLoad(): void {};
+    // Override
+    protected onUnload(): void {};
 
     constructor(props: IProps) {
         super(props);
@@ -17,6 +19,7 @@ abstract class TickingComponent<IProps, IState> extends React.Component<IProps, 
     }
 
     componentDidMount() {
+        this.onLoad();
         this.updateComponent = window.setInterval(() => {
             this.update();
         }, this.tickSpeed);
@@ -25,6 +28,7 @@ abstract class TickingComponent<IProps, IState> extends React.Component<IProps, 
     componentWillUnmount() {
         window.clearInterval(this.updateComponent);
         this.updateComponent = 0;
+        this.onUnload();
     }
 }
 

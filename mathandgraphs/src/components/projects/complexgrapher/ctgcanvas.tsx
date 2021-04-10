@@ -7,8 +7,8 @@ interface IState {
 }
 
 export default class CtgCanvas extends ProjectCanvas<IState> {
-    
-    updateSpeed: number = 5;
+
+    tickSpeed = 10;
 
     // Sliders
     zoomSlider: React.RefObject<Slider> = createRef<Slider>();
@@ -18,6 +18,9 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
     }
 
     update(): void {
+        const zoomValue = this.zoomSlider.current?.state.value;
+        this.zoom = zoomValue === undefined ? 30: zoomValue;
+
         const canvas = this.reference.current!;
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
         const width = canvas.width;
@@ -35,6 +38,8 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         this.drawIntegers(ctx);
         
         this.line(0, 0, this.getWorldMouse().x, this.getWorldMouse().y, ctx);
+
+        this.resetOrigin();
     }
 
     renderAdditionalComponents() {
@@ -46,6 +51,7 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
     }
 
     drawIntegers(ctx: CanvasRenderingContext2D) {
+        console.log(this.zoom);
         for(let x = this.getWorldPos(0, 0).x; x < this.getWorldPos(this.width, 0).x; x += 1) {
             const floorX = Math.floor(x);
             this.text(String(floorX), floorX, 0, 50, ctx);

@@ -1,6 +1,6 @@
 import React, { createRef } from 'react'
 import TickingElement from './tickingelement'
-import Vector2 from './interfaces/vector2'
+import Vector2 from '../../util/structures/vector2'
 
 abstract class MouseTrackingComponent<IProps, IState> extends TickingElement<IProps, IState> {
     
@@ -8,7 +8,7 @@ abstract class MouseTrackingComponent<IProps, IState> extends TickingElement<IPr
     protected mouseDown: boolean = false;
     private trackingElementRef: React.RefObject<any> = createRef();
 
-    private track(e: MouseEvent) {
+    protected track(e: MouseEvent) {
         const bodyRect = document.body.getBoundingClientRect();
         const componentRect = this.trackingElementRef.current!.getBoundingClientRect();
 
@@ -33,11 +33,9 @@ abstract class MouseTrackingComponent<IProps, IState> extends TickingElement<IPr
             this.track(e);
         });
         this.trackingElementRef.current?.addEventListener("mousedown", () => {
-            console.log("Mouse down!");
             this.mouseDown = true;
         });
         this.trackingElementRef.current?.addEventListener("mouseup", () => {
-            console.log("Mouse up!");
             this.mouseDown = false;
         });
         this.trackingElementRef.current?.addEventListener("mouseleave", () => {

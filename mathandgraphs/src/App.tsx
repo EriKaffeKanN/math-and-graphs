@@ -20,7 +20,7 @@ function App() {
         <Header />
         <Switch>
           <Route path="/projects/complexgrapher">
-            <ComplexTransformationGrapher width={0.8*window.innerWidth} height={0.6*window.innerHeight} />
+            <ComplexTransformationGrapher width={1200} height={400}/>
           </Route>
           <Route path="/projects">
             <ProjectMenu />

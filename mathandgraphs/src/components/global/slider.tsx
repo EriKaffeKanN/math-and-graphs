@@ -1,8 +1,8 @@
 import React, { createRef } from 'react'
 import '../../style.scss'
-import Vector2 from './interfaces/vector2';
-import EXMath from '../../util/math'
-import Rect from './interfaces/rect'
+import EXMath from '../../util/math/math'
+import Format from '../../util/formatting/format'
+import Rect from '../../util/structures/rect'
 
 import MouseTrackingComponent from './mousetrackingcomponent'
 
@@ -86,15 +86,11 @@ export default class Slider extends MouseTrackingComponent<IProps, IState> {
         const rect = element.getBoundingClientRect();
         const emtStyle = getComputedStyle(element);
 
-        const removePx = (s: string) => {
-            return(s.slice(0, s.length - 2));
-        }
-
         return{
             x: rect.left,
             y: rect.top,
-            width: Number(removePx(emtStyle.width)),
-            height: Number(removePx(emtStyle.height))
+            width: Number(Format.removePx(emtStyle.width)),
+            height: Number(Format.removePx(emtStyle.height))
         };
     }
 

@@ -1,6 +1,8 @@
 import React, { createRef } from 'react'
 import MouseTrackingComponent from './mousetrackingcomponent';
-import Vector2 from './interfaces/vector2'
+import Vector2 from '../../util/structures/vector2'
+import Format from '../../util/formatting/format';
+import Rect from '../../util/structures/rect';
 
 interface ICanvasProps {
     readonly width?: number;
@@ -11,6 +13,7 @@ export default abstract class ProjectCanvas<IState> extends MouseTrackingCompone
 
     protected width: number;
     protected height: number;
+    protected ctx?: CanvasRenderingContext2D = undefined;
 
     protected origin: Vector2 = {
         x: 0,
@@ -28,10 +31,22 @@ export default abstract class ProjectCanvas<IState> extends MouseTrackingCompone
 
     onLoad() {
         this.startTracking(this.reference);
+        const ctx = this.reference.current!.getContext('2d');
+        if(ctx !== null && ctx !== undefined) {
+            this.ctx = ctx;
+        }
     }
 
     onUnload() {
         this.stopTracking();
+    }
+
+    track(e: MouseEvent) {
+        super.track(e);
+        const displayWidth = Number(Format.removePx(getComputedStyle(this.reference.current!).width));
+        const scalingFactor = this.width / displayWidth;
+        this.mouse.x *= scalingFactor;
+        this.mouse.y *= scalingFactor;
     }
 
     protected reference = createRef<HTMLCanvasElement>();
@@ -57,20 +72,72 @@ export default abstract class ProjectCanvas<IState> extends MouseTrackingCompone
         this.origin.y += y;
     }
 
-    line(startX: number, startY: number, endX: number, endY: number, ctx: CanvasRenderingContext2D) {
+    stroke(c: string) {
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.strokeStyle = c;
+    }
+
+    fill(c: string) {
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.fillStyle = c;
+    }
+
+    clear() {
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+
+    line(startX: number, startY: number, endX: number, endY: number) {
         const startPos: Vector2 = this.getLocalPos(startX, startY);
         const endPos: Vector2 = this.getLocalPos(endX, endY);
 
-        ctx.beginPath();
-        ctx.moveTo(startPos.x, startPos.y);
-        ctx.lineTo(endPos.x, endPos.y);
-        ctx.stroke();
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.beginPath();
+        this.ctx.moveTo(startPos.x, startPos.y);
+        this.ctx.lineTo(endPos.x, endPos.y);
+        this.ctx.stroke();
     }
 
-    text(text: string, x: number, y: number, width: number, ctx: CanvasRenderingContext2D) {
+    rect(startX: number, startY: number, width: number, height: number, fill: boolean) {
+        const localPos = this.getLocalPos(startX, startY);
+        const localRect: Rect = {
+            x: localPos.x,
+            y: localPos.y,
+            width: width * this.zoom,
+            height: height * this.zoom
+        };
+
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.beginPath();
+        this.ctx.rect(localRect.x, localRect.y, localRect.width, localRect.height);
+        // Look at this abbhorent line of code! Ternary operators are executed before commands!
+        fill ? this.ctx.fill() : this.ctx.stroke();
+    }
+
+    text(text: string, x: number, y: number, width: number) {
+        if(this.ctx === undefined) {
+            console.log("Error: canvasrenderingcontext undefined.");
+            return;
+        }
+        this.ctx.font = "20px Arial";
         const textPos: Vector2 = this.getLocalPos(x, y);
 
-        ctx.fillText(
+        this.ctx.fillText(
             text,
             textPos.x,
             textPos.y,

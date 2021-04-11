@@ -60,6 +60,7 @@ p, span, div {
 canvas {
   border: solid 2px $border-color;
   background-color: $canvasColor;
+  max-width: 90%;
 }
 
 /* Global components */
@@ -178,7 +179,7 @@ canvas {
 .hamburger {
   z-index: 15;
 
-  :hover {
+  &:hover {
     cursor: pointer;
   }
 

@@ -1,4 +1,5 @@
 import { createRef } from 'react';
+import ComplexNumber from '../../../util/math/complexnumber';
 import ProjectCanvas from '../../global/projectCanvas'
 import Slider from '../../global/slider'
 
@@ -9,6 +10,11 @@ interface IState {
 export default class CtgCanvas extends ProjectCanvas<IState> {
 
     tickSpeed = 10;
+    
+    complexNumberDistance = 1;
+    complexNumbers: ComplexNumber[][] = [];
+
+    primaryColor: string = "white";
 
     // Sliders
     zoomSlider: React.RefObject<Slider> = createRef<Slider>();
@@ -17,20 +23,65 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         this.zoom = 30;
     }
 
+    onLoad() {
+        super.onLoad();
+
+        // init complex numbers
+        const w = 20;
+        const h = 20;
+
+        const ReOffset = Math.floor(w / -2) * this.complexNumberDistance;
+        const ImOfsset = Math.floor(h / -2) * this.complexNumberDistance;
+        for(let x = 0; x <= w; x += 1) {
+            this.complexNumbers.push([]);
+            const Re = x * this.complexNumberDistance;
+            for(let y = 0; y <= h; y += 1) {
+                const Im = y * this.complexNumberDistance;
+                this.complexNumbers[x].push(new ComplexNumber(Re + ReOffset, Im + ImOfsset));
+            }
+        }
+
+        this.transform();
+    }
+
+    transform() {
+        // !!! --- IMPORTANT ---  !!! //
+        // Hard coded transformation goes here: (for now)
+        // !!! --- IMPORTANT --- !!! //
+        this.complexNumbers.forEach(ary => ary.forEach(z => {
+            z.square();
+            z.divideN(7);
+        }));
+    }
+
     update(): void {
         const zoomValue = this.zoomSlider.current?.state.value;
         this.zoom = zoomValue === undefined ? 30: zoomValue;
-        const canvas = this.reference.current!;
-        const width = canvas.width;
-        const height = canvas.height;
 
         // Drawing
-        this.stroke("white");
-        this.fill("white");
+        this.stroke(this.primaryColor);
+        this.fill(this.primaryColor);
         this.clear();
 
+        this.drawBackground();   
+        this.drawComplexNumbers("red");         
+
+        this.resetOrigin();
+    }
+
+    drawComplexNumbers(color: string) {
+        this.stroke(color);
+        this.fill(color);
+        this.complexNumbers.forEach(arr => arr.forEach(z => {
+            this.rect(z.a - (5 / this.zoom), z.b - (5 / this.zoom), 10 / this.zoom, 10 / this.zoom, true);
+        }));
+        this.stroke(this.primaryColor);
+        this.fill(this.primaryColor);
+    }
+
+    drawBackground() {
         // X and Y axes
-        this.translate(width/2, height/2);
+        this.translate(this.width/2, this.height/2);
         this.drawGrid();
         this.line(-this.width/2, 0, this.width/2, 0);
         this.line(0, this.height, 0, -this.height/2);
@@ -43,14 +94,12 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
             1,
             true
         );
-
-        this.resetOrigin();
     }
 
     renderAdditionalComponents() {
         return(
             <div className="sliderCollection">
-                <Slider ref={this.zoomSlider} min={40} max={180} step={0.1} value={50} name="Zoom"/>
+                <Slider ref={this.zoomSlider} min={10} max={180} step={0.1} value={50} name="Zoom"/>
             </div>
         );
     }

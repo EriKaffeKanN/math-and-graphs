@@ -1,3 +1,5 @@
+import { Z_ASCII } from "node:zlib";
+
 export default class ComplexNumber {
     a: number;
     b: number;
@@ -28,12 +30,17 @@ export default class ComplexNumber {
     }
 
     divideC(c: ComplexNumber) {
-        // TODO: Make this
-        // Use complex conjugate or eulers identity
+        c.reciprocal();
+        this.muliplyC(c);
     }
     divideN(n: number) {
         this.a /= n;
         this.b /= n;
+    }
+
+    reciprocal() {
+        this.b = -this.b;
+        this.divideN(this.a * this.a + this.b * this.b);
     }
 
     square(): void {

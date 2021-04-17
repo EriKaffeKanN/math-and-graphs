@@ -1,19 +1,18 @@
-import { JsxElement } from 'typescript';
 import '../../style.scss'
 
 import NavButton from './navbutton';
 
-type ProjectDisplayProptypes = {
+interface ProjectDisplayProptypes {
     title: string;
     link: string;
-    img?: JsxElement;
-};
+    img?: string;
+}
 
 function ProjectDisplay(props: ProjectDisplayProptypes) {
     return(
         <div className="projectDisplay">
             <h3>{props.title}</h3>
-            <figure>{props.img}</figure>
+            <figure><img src={props.img} alt={props.title}/></figure>
             <NavButton text="Open" link={"projects/" + props.link} />
         </div>
     );

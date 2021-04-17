@@ -1,10 +1,10 @@
 import React, { createRef } from 'react'
-import '../../style.scss'
-import EXMath from '../../util/math/math'
-import Format from '../../util/formatting/format'
-import Rect from '../../util/structures/rect'
+import '../../../style.scss'
+import EXMath from '../../../util/math/math'
+import Format from '../../../util/formatting/format'
+import Rect from '../../../util/structures/rect'
 
-import MouseTrackingComponent from './mousetrackingcomponent'
+import MouseTrackingComponent from '../mousetrackingcomponent'
 
 interface IProps {
     min: number;

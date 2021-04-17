@@ -1,7 +1,8 @@
 import { createRef } from 'react';
 import ComplexNumber from '../../../util/math/complexnumber';
 import ProjectCanvas from '../../global/projectCanvas'
-import Slider from '../../global/slider'
+import Slider from '../../global//userinput/slider'
+import CheckBoxes from '../../global/userinput/checkboxes';
 
 interface IState {
 
@@ -16,8 +17,11 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
 
     primaryColor: string = "white";
 
-    // Sliders
+    // Options
+        // Sliders
     zoomSlider: React.RefObject<Slider> = createRef<Slider>();
+        // Checkboxes
+    displayOptions: React.RefObject<CheckBoxes> = createRef<CheckBoxes>();
 
     init() {
         this.zoom = 30;
@@ -49,9 +53,14 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         // Hard coded transformation goes here: (for now)
         // !!! --- IMPORTANT --- !!! //
         this.complexNumbers.forEach(ary => ary.forEach(z => {
-            z.square();
-            z.divideN(7);
+            z.reciprocal();
+            z.muliplyN(20);
         }));
+    }
+
+    getDisplayOption(option: string) {
+        const displayOptions = this.displayOptions.current?.state.input;
+        return displayOptions?.get(option) == undefined ? false : displayOptions.get(option);
     }
 
     update(): void {
@@ -63,17 +72,23 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         this.fill(this.primaryColor);
         this.clear();
 
-        this.drawBackground();   
-        this.drawComplexNumbers("red");         
+        this.drawBackground();
+        if(this.getDisplayOption("Dots")){
+            this.drawComplexNumbers("red");
+        }     
 
         this.resetOrigin();
+    }
+
+    dot(posX: number, posY: number) {
+        this.rect(posX - (5 / this.zoom), posY - (5 / this.zoom), 10 / this.zoom, 10 / this.zoom, true);
     }
 
     drawComplexNumbers(color: string) {
         this.stroke(color);
         this.fill(color);
         this.complexNumbers.forEach(arr => arr.forEach(z => {
-            this.rect(z.a - (5 / this.zoom), z.b - (5 / this.zoom), 10 / this.zoom, 10 / this.zoom, true);
+            this.dot(z.a, z.b);
         }));
         this.stroke(this.primaryColor);
         this.fill(this.primaryColor);
@@ -82,24 +97,26 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
     drawBackground() {
         // X and Y axes
         this.translate(this.width/2, this.height/2);
-        this.drawGrid();
+        if(this.getDisplayOption("Coordinate Lines"))
+            this.drawGrid();
+        if(this.getDisplayOption("Transformed Lines"))
+            this.drawTransformedGrid();
         this.line(-this.width/2, 0, this.width/2, 0);
         this.line(0, this.height, 0, -this.height/2);
         this.drawIntegers();
         
-        this.rect(
-            Math.floor(this.getWorldMouse().x),
-            Math.floor(this.getWorldMouse().y),
-            1,
-            1,
-            true
-        );
+        this.dot(Math.round(this.getWorldMouse().x), Math.round(this.getWorldMouse().y));
     }
 
     renderAdditionalComponents() {
         return(
             <div className="sliderCollection">
                 <Slider ref={this.zoomSlider} min={10} max={180} step={0.1} value={50} name="Zoom"/>
+                <CheckBoxes ref={this.displayOptions} topic="Transformation type" options={[
+                    "Dots",
+                    "Transformed Lines",
+                    "Coordinate Lines"
+                ]}/>
             </div>
         );
     }
@@ -115,6 +132,23 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         for(let y = originWorld.y; y < downWorld; y++) {
             const ceilY = Math.ceil(y);
             this.line(originWorld.x, ceilY, rightWorld, ceilY);
+        }
+    }
+
+    drawTransformedGrid() {
+        for(let x = 0; x < this.complexNumbers.length; x++) {
+            for(let y = 0; y < this.complexNumbers[x].length - 1; y++) {
+                const c1 = this.complexNumbers[x][y];
+                const c2 = this.complexNumbers[x][y + 1];
+                this.line(c1.a, c1.b, c2.a, c2.b);
+            }
+        }
+        for(let x = 0; x < this.complexNumbers.length - 1; x++) {
+            for(let y = 0; y < this.complexNumbers[x].length; y++) {
+                const c1 = this.complexNumbers[x][y];
+                const c2 = this.complexNumbers[x + 1][y];
+                this.line(c1.a, c1.b, c2.a, c2.b);
+            }
         }
     }
 

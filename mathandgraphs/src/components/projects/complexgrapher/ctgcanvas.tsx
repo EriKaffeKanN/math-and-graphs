@@ -4,9 +4,7 @@ import ProjectCanvas from '../../global/projectCanvas'
 import Slider from '../../global//userinput/slider'
 import CheckBoxes from '../../global/userinput/checkboxes';
 
-interface IState {
-
-}
+interface IState {}
 
 export default class CtgCanvas extends ProjectCanvas<IState> {
 
@@ -53,14 +51,14 @@ export default class CtgCanvas extends ProjectCanvas<IState> {
         // Hard coded transformation goes here: (for now)
         // !!! --- IMPORTANT --- !!! //
         this.complexNumbers.forEach(ary => ary.forEach(z => {
-            z.reciprocal();
-            z.muliplyN(20);
+            z.square();
+            z.divideN(7);
         }));
     }
 
     getDisplayOption(option: string) {
         const displayOptions = this.displayOptions.current?.state.input;
-        return displayOptions?.get(option) == undefined ? false : displayOptions.get(option);
+        return displayOptions?.get(option) === undefined ? false : displayOptions.get(option);
     }
 
     update(): void {

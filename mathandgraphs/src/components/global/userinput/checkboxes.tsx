@@ -1,11 +1,6 @@
 import React from 'react'
 import OptionsForm from './optionsform'
 
-interface IProps {
-    topic: string;
-    options: Array<string>;
-}
-
 export default class CheckBoxes extends OptionsForm {
 
     buttonType = "checkbox";
@@ -14,7 +9,7 @@ export default class CheckBoxes extends OptionsForm {
         const prevMap = this.state.input;
         let valueMap: Map<string, boolean>;
         const key = event.target.getAttribute("name")!;
-        if(prevMap != undefined){
+        if(prevMap !== undefined){
             valueMap = prevMap;
             const value = prevMap.get(key);
             valueMap.set(key, !value)
